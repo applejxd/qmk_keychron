@@ -1,0 +1,24 @@
+name: Build a firmware on demand
+
+on:
+  workflow_dispatch:
+    inputs:
+      keyboard:
+        description: 'Keyboard'
+        required: true
+        type: choice
+        options:
+        - q6_max/jis_encoder
+        - k2_pro/jis/white
+      keymap:
+        description: 'Keymap'
+        required: true
+        type: string
+        default: 'emacs'
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-firmware.yml
+    with:
+      keyboard:    ${{ inputs.keyboard }}
+      keymap:      ${{ inputs.keymap }}
