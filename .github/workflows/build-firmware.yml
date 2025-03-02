@@ -19,12 +19,12 @@ jobs:
       image: ghcr.io/qmk/qmk_cli:latest
 
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v4
-      with:
-        ref: feature/emacs
-        fetch-depth: 1
-        submodules: recursive
+    # - name: Checkout source
+    #   uses: actions/checkout@v4
+    #   with:
+    #     ref: feature/emacs
+    #     fetch-depth: 1
+    #     submodules: recursive
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
