@@ -25,10 +25,10 @@ jobs:
         ref: feature/emacs
         fetch-depth: 1
         submodules: recursive
-    - name: see info
-      run: qmk info -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Install missing python modules
       run: /usr/bin/python3 -m pip install -r requirements.txt
+    - name: see info
+      run: qmk info -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Compile and link
       run: qmk -v compile -j 4 -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Archive built firmware
