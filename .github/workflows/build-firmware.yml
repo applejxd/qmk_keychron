@@ -19,16 +19,20 @@ jobs:
       image: ghcr.io/qmk/qmk_cli:latest
 
     steps:
-    # - name: Checkout source
-    #   uses: actions/checkout@v4
-    #   with:
-    #     ref: feature/emacs
-    #     fetch-depth: 1
-    #     submodules: recursive
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        ref: feature/emacs
+        fetch-depth: 1
+        submodules: recursive
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
       run: /usr/bin/python3 -m pip install -r requirements.txt
+    - name: list files
+      run: ls -la
+    - name: list files
+      run: ls -la ..
     - name: Compile and link
       run: qmk -v compile -j 4 -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Archive built firmware
