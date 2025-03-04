@@ -32,7 +32,7 @@ jobs:
     - name: PWD
       run: pwd
     - name: list files
-      run: ls -la
+      run: ls -la ./keyboards/keychron/${{ inputs.keyboard }}/keymaps/${{ inputs.keymap }}
     - name: Compile and link
       run: qmk compile -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Archive built firmware
