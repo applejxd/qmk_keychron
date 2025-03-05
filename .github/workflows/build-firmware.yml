@@ -27,6 +27,8 @@ jobs:
         submodules: recursive
     - name: Fetch all tags
       run: git fetch --tags
+    - name: Checkout feature/emacs branch
+      run: git checkout feature/emacs
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
