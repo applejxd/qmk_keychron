@@ -29,6 +29,8 @@ jobs:
       run: git fetch --tags
     - name: Checkout feature/emacs branch
       run: git checkout feature/emacs
+    - name: Add safe directory
+      run: git config --global --add safe.directory /__w/qmk_keychron/qmk_keychron
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
