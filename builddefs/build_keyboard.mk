@@ -59,7 +59,7 @@ VERSION_H_FLAGS += --skip-git
 endif
 
 # Generate the board's version.h file.
-# $(shell $(QMK_BIN) generate-version-h $(VERSION_H_FLAGS) -q -o $(INTERMEDIATE_OUTPUT)/src/version.h)
+$(shell $(QMK_BIN) generate-version-h $(VERSION_H_FLAGS) -q -o $(INTERMEDIATE_OUTPUT)/src/version.h)
 
 # Determine which subfolders exist.
 KEYBOARD_FOLDER_PATH_1 := $(KEYBOARD)

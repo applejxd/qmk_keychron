@@ -25,12 +25,6 @@ jobs:
         ref: feature/emacs
         fetch-depth: 1
         submodules: recursive
-    - name: Fetch all tags
-      run: git fetch --tags
-    - name: Checkout feature/emacs branch
-      run: git checkout feature/emacs
-    - name: Add safe directory
-      run: git config --global --add safe.directory *
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
