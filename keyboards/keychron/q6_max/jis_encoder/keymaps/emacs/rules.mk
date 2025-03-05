@@ -1,4 +1,4 @@
-VIA_ENABLE = yes
+VIA_ENABLE = no
 
 # ALT key キーの上書きのため
 # https://docs.qmk.fm/features/key_overrides
