@@ -39,7 +39,8 @@ enum custom_keycodes {
     // for Windows
     DEEPL,
     COPILOT,
-    CHATGPT
+    CHATGPT,
+    PERP
 };
 
 /* ------ */
@@ -49,7 +50,7 @@ enum custom_keycodes {
 // see https://docs.qmk.fm/reference_keymap_extras#header-files
 #include <sendstring_japanese.h>
 
-void open_website(const char *url) {
+void run_on_windows(const char *url) {
     // open command dialog
     tap_code16(G(KC_R));
     // wait for moving active window and clear inputs
@@ -142,14 +143,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             break;
         case COPILOT:
-            if (record->event.pressed) {
-                open_website("https://m365.cloud.microsoft/chat?auth=2");
-            }
+            if (record->event.pressed) { run_on_windows("https://m365.cloud.microsoft/chat?auth=2"); }
             break;
         case CHATGPT:
-            if (record->event.pressed) {
-                open_website("https://chatgpt.com/");
-            }
+            if (record->event.pressed) { run_on_windows("https://chatgpt.com/"); }
+            break;
+        case PERP:
+            if (record->event.pressed) { run_on_windows("https://www.perplexity.ai/"); }
             break;
     }
     // Keychron original macros
@@ -228,7 +228,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,    _______,                      _______,                      _______,  _______,  _______,  _______,    _______,            _______,  _______,  _______,  _______,            _______          ),
     [WIN_CX] = LAYOUT_113_jis(
         _______,  _______,  _______,    _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,  _______,    _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  CHATGPT,     PERP,    _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         _______,  _______,  S(C(KC_S)), _______,  _______,  _______,   _______,  C(KC_X),  _______,A(KC_TAB),  _______,  _______,  _______,    _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,
         _______,  _______,  C(KC_S),    G(KC_E),  C(KC_O),  _______,   C(KC_A),  _______,  C(KC_W),  _______,  _______,  _______,  _______,                                                      _______,  _______,  _______,
         _______,  _______,  _______,    A(KC_F4), _______,  G(KC_TAB), _______,  _______,  _______,  _______,  _______,  _______,  _______,                                  _______,            _______,  _______,  _______,  _______,
