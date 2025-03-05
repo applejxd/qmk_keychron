@@ -25,6 +25,8 @@ jobs:
         ref: feature/emacs
         fetch-depth: 1
         submodules: recursive
+    - name: Fetch all tags
+      run: git fetch --tags
     - name: Install QMK
       run: qmk setup
     - name: Install Python dependencies
