@@ -38,7 +38,11 @@ enum custom_keycodes {
     UBU_GPT,
     // for Windows
     DEEPL,
-    COPILOT
+    COPILOT,
+    CHATGPT,
+    PERP,
+    GGL_EN,
+    SCLR,
 };
 
 /* ------ */
@@ -47,6 +51,20 @@ enum custom_keycodes {
 
 // see https://docs.qmk.fm/reference_keymap_extras#header-files
 #include <sendstring_japanese.h>
+
+void run_on_windows(const char *url) {
+    // open command dialog
+    tap_code16(G(KC_R));
+    // wait for moving active window and clear inputs
+    SEND_STRING(SS_DELAY(300));
+    tap_code(KC_DEL);
+    // open URL
+    SEND_STRING(SS_DELAY(100));
+    send_string(url);
+    SEND_STRING(SS_DELAY(100));
+    tap_code(KC_ENT);
+}
+
 
 bool set_mark_active = false;  // マーク状態を保持
 uint8_t mod_state;
@@ -138,20 +156,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             break;
         case COPILOT:
-            if (record->event.pressed) {
-                // open command dialog
-                tap_code16(G(KC_R));
-                // wait for moving active window and clear inputs
-                SEND_STRING(SS_DELAY(300));
-                tap_code(KC_DEL);
-                SEND_STRING(
-                    SS_DELAY(100)
-                    // open URL
-                    "https://m365.cloud.microsoft/chat?auth=2"
-                );
-                SEND_STRING(SS_DELAY(100));
-                tap_code(KC_ENT);
-            }
+            if (record->event.pressed) { run_on_windows("https://m365.cloud.microsoft/chat?auth=2"); }
+            break;
+        case CHATGPT:
+            if (record->event.pressed) { run_on_windows("https://chatgpt.com/"); }
+            break;
+        case PERP:
+            if (record->event.pressed) { run_on_windows("https://www.perplexity.ai/"); }
+            break;
+        case GGL_EN:
+            if (record->event.pressed) { run_on_windows("https://www.google.com/webhp?gl=us&hl=en&gws_rd=cr&pws=0"); }
+            break;
+        case SCLR:
+            if (record->event.pressed) { run_on_windows("https://scholar.google.com/"); }
             break;
     }
     return true;
@@ -214,14 +231,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [WIN_FN] = LAYOUT(
         KC_TRNS,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  BL_DOWN,  BL_UP,    KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,  KC_TRNS,  BL_BRTG,
         KC_TRNS,  BT_HST1,  BT_HST2,  BT_HST3,  DEEPL,    COPILOT,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BL_UP,
-        BL_TOGG,G(S(KC_F23)),CUT_TEXT, KC_END,  C(KC_R),  C(KC_T),  C(KC_V),  C(KC_Z),   KC_TAB,  C(KC_O),    KC_UP, SET_MARK,  KC_TRNS,                      BL_DOWN,
-        KC_TRNS,  KC_HOME,  C(KC_F),   KC_DEL,  KC_RGHT,   UNMARK,  KC_BSPC,   KC_ENT, CUT_LINE,  C(KC_L),  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,
-        KC_TRNS,            G(KC_DOWN),OSL(WIN_CX),C(KC_C),KC_PGDN, KC_LEFT,  KC_DOWN,   KC_ENT,  KC_TRNS,  KC_TRNS,  C(KC_Z),  KC_TRNS,  KC_TRNS,            KC_TRNS,
-        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,                     SET_MARK,                      KC_TRNS,  KC_TRNS,  KC_TRNS,KC_MS_LEFT,KC_MS_UP,KC_MS_DOWN,KC_MS_RIGHT),
+        BL_TOGG,G(S(KC_F23)),CUT_TEXT, KC_END,  C(KC_R),  C(KC_T),  C(KC_V),  C(KC_Z),   KC_TAB,  C(KC_O),    KC_UP, SET_MARK,  KC_ESC,                      BL_DOWN,
+        KC_TRNS,  KC_HOME,  C(KC_F),   KC_DEL,  KC_RGHT,   UNMARK,  KC_BSPC,   KC_ENT, CUT_LINE,  C(KC_L),C(KC_SCLN),C(KC_QUOT),C(KC_NUHS),KC_TRNS,            KC_TRNS,
+     C(KC_LSFT),           G(KC_DOWN),OSL(WIN_CX),C(KC_C),KC_PGDN, KC_LEFT,  KC_DOWN,   KC_ENT,C(KC_COMM),C(KC_DOT),  C(KC_Z), KC_TRNS,C(KC_RSFT),            KC_TRNS,
+        KC_TRNS,C(KC_LGUI),C(KC_LALT),  KC_TRNS,                     SET_MARK,                      KC_TRNS,  KC_TRNS,  KC_TRNS,KC_MS_LEFT,KC_MS_UP,KC_MS_DOWN,KC_MS_RIGHT),
     
     [WIN_CX] = LAYOUT(
         KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+        KC_TRNS,  CHATGPT,     PERP,   GGL_EN,     SCLR,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
         KC_TRNS,  KC_TRNS,S(C(KC_S)), KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  C(KC_X),  KC_TRNS,A(KC_TAB),  KC_TRNS,  KC_TRNS,  KC_TRNS,                      KC_TRNS,
         KC_TRNS,  KC_TRNS,  C(KC_S),  KC_FILE,  C(KC_O),  KC_TRNS,  C(KC_A),  KC_TRNS,  C(KC_W),  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,
         KC_TRNS,            KC_TRNS,  KC_TRNS, A(KC_F4),  KC_TRNS,  KC_TASK,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,
