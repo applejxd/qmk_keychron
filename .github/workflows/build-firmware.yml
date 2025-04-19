@@ -23,16 +23,17 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: feature/emacs
-        fetch-depth: 0
         submodules: recursive
+    - name: Set up QMK environment
+      run: qmk setup --home . --yes
     - name: Install Python dependencies
       run: /usr/bin/python3 -m pip install -r requirements.txt
-    - name: PWD
-      run: pwd
-    - name: list files
-      run: ls -la ./keyboards/keychron/${{ inputs.keyboard }}/keymaps/${{ inputs.keymap }}
+    # - name: PWD
+    #   run: pwd
+    # - name: list files
+    #   run: ls -la ./keyboards/keychron/${{ inputs.keyboard }}/keymaps/${{ inputs.keymap }}
     - name: Compile and link
-      run: qmk compile -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
+      run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Archive built firmware
       uses: actions/upload-artifact@v4
       with:
