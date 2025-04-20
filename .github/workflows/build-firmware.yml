@@ -28,11 +28,11 @@ jobs:
         submodules: recursive
     - name: Build firmware
       run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
-    - name: Extract prefix
-      id: extract
-      run: echo "prefix=${{ inputs.keyboard }}" | awk -F'/' '{print $1}' >> $GITHUB_OUTPUT
+    - name: Replace slash with dash
+      id: replace
+      run: echo "$(echo '${{ inputs.keyboard }}' | tr '/' '-')" >> $GITHUB_OUTPUT
     - name: Archive built firmware
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.extract.outputs.prefix }}-${{ inputs.keymap }}-firmware
+        name: ${{ steps.replace.outputs.keyboard }}-${{ inputs.keymap }}-firmware
         path: ./*.bin
