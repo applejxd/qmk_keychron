@@ -28,10 +28,8 @@ jobs:
         submodules: recursive
     - name: Build firmware
       run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
-    - name: Check
-      run: pwd && ls -l
     - name: Archive built firmware
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.keyboard }}-${{ inputs.keymap }}-firmware
-        path: __qmk__/*.hex
+        path: ./*.bin
