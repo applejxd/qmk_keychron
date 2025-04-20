@@ -28,8 +28,11 @@ jobs:
         submodules: recursive
     - name: Build firmware
       run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
+    - name: Extract prefix
+      id: extract
+      run: echo "prefix=${{ inputs.keyboard }}" | awk -F'/' '{print "prefix="$1}' >> $GITHUB_OUTPUT
     - name: Archive built firmware
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.keyboard }}-${{ inputs.keymap }}-firmware
+        name: ${{ steps.extract.outputs.prefix }}-${{ inputs.keymap }}-firmware
         path: ./*.bin
