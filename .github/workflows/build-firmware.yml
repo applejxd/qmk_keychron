@@ -28,9 +28,9 @@ jobs:
         submodules: recursive
     - name: Build firmware
       run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
-    - name: Replace slash with dash
+    - name: Replace slash with underscore
       id: replace
-      run: echo "$(echo '${{ inputs.keyboard }}' | tr '/' '_')" >> $GITHUB_OUTPUT
+      run: echo "keyboard=$(echo 'q6_max/jis_encoder' | tr '/' '_')" >> $GITHUB_OUTPUT
     - name: Archive built firmware
       uses: actions/upload-artifact@v4
       with:
