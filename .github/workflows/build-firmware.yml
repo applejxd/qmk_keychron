@@ -27,7 +27,7 @@ jobs:
         fetch-depth: 1
         submodules: recursive
     - name: Build firmware
-      run: qmk compile -j $(nproc) -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
+      run: qmk compile -kb keychron/${{ inputs.keyboard }} -km ${{ inputs.keymap }}
     - name: Replace slash with underscore
       id: replace
       run: echo "keyboard=$(echo 'q6_max/jis_encoder' | tr '/' '_')" >> $GITHUB_OUTPUT
