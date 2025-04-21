@@ -30,9 +30,7 @@ enum layers {
 enum custom_keycodes {
     CUT_LINE = SAFE_RANGE,  // cutline as Emacs
     SET_MARK,   
-    UNMARK,
-    COPY_TEXT,  
-    CUT_TEXT,
+    ABORT,
     // for Ubuntu
     NAUTILUS,
     UBU_GPT,
@@ -82,26 +80,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case SET_MARK:
             if (record->event.pressed) set_mark_active = !set_mark_active;
             break;
-        case UNMARK:
+        case ABORT:
             if (record->event.pressed) {
-                tap_code(KC_ESC);
-                set_mark_active = false;
-            }
-            break;
-        case COPY_TEXT:
-            if (record->event.pressed) {
-                tap_code16(C(KC_C));
-                set_mark_active = false;
-            }
-            break;
-        case CUT_TEXT:
-            if (record->event.pressed) {
-                tap_code16(C(KC_X));
-                set_mark_active = false;
+                if (set_mark_active) {
+                    // マーク解除時は ESC を送信しない
+                    set_mark_active = false;
+                } else {
+                    tap_code(KC_ESC);
+                }
             }
             break;
         case KC_LEFT: case KC_RIGHT: case KC_UP: case KC_DOWN: 
         case KC_HOME: case KC_END: case KC_PGDN: case KC_PGUP:
+            // 範囲選択
             if (set_mark_active) {
                 if (record->event.pressed) {
                     register_code(KC_LSFT);
@@ -109,6 +100,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     unregister_code(KC_LSFT);
                 }
             }
+            break;
+        case C(KC_C): case C(KC_X): case C(KC_V): case C(KC_K):
+            // 選択範囲を用いたアクションの後は選択解除
+            if (record->event.pressed) { set_mark_active = false; }
             break;
         case KC_W:
             if (record->event.pressed) {
@@ -213,12 +208,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL,  KC_LGUI,  KC_LALT,  KC_INT5,                      KC_SPC,                       KC_INT4,  KC_RALT, MO(UBU_FN),KC_LEFT,  KC_UP,    KC_DOWN,  KC_RGHT),
 
     [UBU_FN] = LAYOUT(
-        KC_TRNS,  KC_BRID,  KC_BRIU,  KC_LGUI,  NAUTILUS, BL_DOWN,  BL_UP,    KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,  KC_TRNS,  BL_BRTG,
-        KC_TRNS,  BT_HST1,  BT_HST2,  BT_HST3,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BL_UP,
-        BL_TOGG,  UBU_GPT, CUT_TEXT,   KC_END,  KC_TRNS,  KC_TRNS,  C(KC_V),  C(KC_Z),   KC_TAB,  KC_TRNS,    KC_UP, SET_MARK,  KC_TRNS,                      BL_DOWN,
-        KC_TRNS,  KC_HOME,  C(KC_F),   KC_DEL,  KC_RGHT,   UNMARK,  KC_BSPC,   KC_ENT, CUT_LINE,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS, 
-        KC_TRNS,            G(KC_H),OSL(UBU_CX),KC_TRNS,  KC_PGDN,  KC_LEFT,  KC_DOWN,   KC_ENT,  KC_TRNS,  KC_TRNS,  C(KC_Z),  KC_TRNS,  KC_TRNS,            KC_TRNS,
-        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,                     SET_MARK,                      KC_TRNS,  KC_TRNS,  KC_TRNS,KC_MS_LEFT,KC_MS_UP,KC_MS_DOWN,KC_MS_RIGHT),
+        KC_TRNS,  KC_BRID,  KC_BRIU,  KC_LGUI,    NAUTILUS, BL_DOWN,  BL_UP,    KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,   KC_TRNS,  KC_TRNS,    BL_BRTG,
+        KC_TRNS,  BT_HST1,  BT_HST2,  BT_HST3,    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,   KC_TRNS,  KC_TRNS,    BL_UP,
+        BL_TOGG,  UBU_GPT,  C(KC_X),  KC_END,     KC_TRNS,  KC_TRNS,  C(KC_V),  C(KC_Z),  KC_TAB,   KC_TRNS,    KC_UP,  SET_MARK, KC_TRNS,                         BL_DOWN,
+        KC_TRNS,  KC_HOME,  C(KC_F),  KC_DEL,     KC_RGHT,  ABORT,    KC_BSPC,  KC_ENT,   CUT_LINE, KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,   KC_TRNS,              KC_TRNS, 
+        KC_TRNS,            G(KC_H),  OSL(UBU_CX),KC_TRNS,  KC_PGDN,  KC_LEFT,  KC_DOWN,  KC_ENT,   KC_TRNS,  KC_TRNS,  C(KC_Z),  KC_TRNS,   KC_TRNS,              KC_TRNS,
+        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,                        SET_MARK,                     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_MS_LEFT,KC_MS_UP, KC_MS_DOWN, KC_MS_RIGHT),
 
     [WIN_BASE] = LAYOUT(
         KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_PSCR,  KC_DEL,   BL_STEP,
@@ -229,12 +224,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL,  KC_LGUI,  KC_LALT,  KC_INT5,                      KC_SPC,                       KC_INT4,  KC_RALT, MO(WIN_FN),KC_LEFT,  KC_UP,    KC_DOWN,  KC_RGHT),
 
     [WIN_FN] = LAYOUT(
-        KC_TRNS,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  BL_DOWN,  BL_UP,    KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,  KC_TRNS,  BL_BRTG,
-        KC_TRNS,  BT_HST1,  BT_HST2,  BT_HST3,  DEEPL,    COPILOT,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BL_UP,
-        BL_TOGG,G(S(KC_F23)),CUT_TEXT, KC_END,  C(KC_R),  C(KC_T),  C(KC_V),  C(KC_Z),   KC_TAB,  C(KC_O),    KC_UP, SET_MARK,  KC_ESC,                      BL_DOWN,
-        KC_TRNS,  KC_HOME,  C(KC_F),   KC_DEL,  KC_RGHT,   UNMARK,  KC_BSPC,   KC_ENT, CUT_LINE,  C(KC_L),C(KC_SCLN),C(KC_QUOT),C(KC_NUHS),KC_TRNS,            KC_TRNS,
-     C(KC_LSFT),           G(KC_DOWN),OSL(WIN_CX),C(KC_C),KC_PGDN, KC_LEFT,  KC_DOWN,   KC_ENT,C(KC_COMM),C(KC_DOT),  C(KC_Z), KC_TRNS,C(KC_RSFT),            KC_TRNS,
-        KC_TRNS,C(KC_LGUI),C(KC_LALT),  KC_TRNS,                     SET_MARK,                      KC_TRNS,  KC_TRNS,  KC_TRNS,KC_MS_LEFT,KC_MS_UP,KC_MS_DOWN,KC_MS_RIGHT),
+        KC_TRNS,  KC_BRID,     KC_BRIU,   KC_TASK,    KC_FILE,  BL_DOWN, BL_UP,    KC_MPRV,  KC_MPLY,  KC_MNXT,   KC_MUTE,   KC_VOLD,   KC_VOLU,   KC_TRNS,    KC_TRNS,    BL_BRTG,
+        KC_TRNS,  BT_HST1,     BT_HST2,   BT_HST3,    DEEPL,    COPILOT, KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,   KC_TRNS,   KC_TRNS,   KC_TRNS,   KC_TRNS,    KC_TRNS,    BL_UP,
+        BL_TOGG,  G(S(KC_F23)),C(KC_X),   KC_END,     C(KC_R),  C(KC_T), C(KC_V),  C(KC_Z),  KC_TAB,   C(KC_O),   KC_UP,     SET_MARK,  KC_ESC,                            BL_DOWN,
+        KC_TRNS,  KC_HOME,     C(KC_F),   KC_DEL,     KC_RGHT,  ABORT,   KC_BSPC,  KC_ENT,   CUT_LINE, C(KC_L),   C(KC_SCLN),C(KC_QUOT),C(KC_NUHS),KC_TRNS,                KC_TRNS,
+     C(KC_LSFT),               G(KC_DOWN),OSL(WIN_CX),C(KC_C),  KC_PGDN, KC_LEFT,  KC_DOWN,  KC_ENT,   C(KC_COMM),C(KC_DOT), C(KC_Z),   KC_TRNS,   C(KC_RSFT),             KC_TRNS,
+        KC_TRNS,  C(KC_LGUI),  C(KC_LALT),KC_TRNS,                       SET_MARK,                     KC_TRNS,   KC_TRNS,   KC_TRNS,   KC_MS_LEFT,KC_MS_UP,   KC_MS_DOWN, KC_MS_RIGHT),
     
     [WIN_CX] = LAYOUT(
         KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,

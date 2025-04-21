@@ -22,20 +22,15 @@ enum layers {
     MAC_BASE,
     MAC_FN,
     WIN_BASE,
-    // Emacs Ctrl binding
-    WIN_FN,
-    // Emacs C-x binding
-    WIN_CX,
-    // Emacs set-mark mode
-    MAC_CX
+    WIN_FN, // Emacs Ctrl binding
+    WIN_CX, // Emacs C-x binding
+    MAC_CX  // Emacs set-mark mode
 };
 
 enum custom_keycodes {
     CUT_LINE = SAFE_RANGE,  // cutline as Emacs
     SET_MARK,   
     ABORT,
-    COPY_TEXT,  
-    CUT_TEXT,
     // for Windows
     DEEPL,
     COPILOT,
@@ -91,20 +86,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
-        case COPY_TEXT:
-            if (record->event.pressed) {
-                tap_code16(C(KC_C));
-                set_mark_active = false;
-            }
-            break;
-        case CUT_TEXT:
-            if (record->event.pressed) {
-                tap_code16(C(KC_X));
-                set_mark_active = false;
-            }
-            break;
         case KC_LEFT: case KC_RIGHT: case KC_UP: case KC_DOWN: 
         case KC_HOME: case KC_END: case KC_PGDN: case KC_PGUP:
+            // 範囲選択
             if (set_mark_active) {
                 if (record->event.pressed) {
                     register_code(KC_LSFT);
@@ -112,6 +96,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     unregister_code(KC_LSFT);
                 }
             }
+            break;
+        case C(KC_C): case C(KC_X): case C(KC_V): case C(KC_K):
+            // 選択範囲を用いたアクションの後は選択解除
+            if (record->event.pressed) { set_mark_active = false; }
             break;
         case KC_W:
             if (record->event.pressed) {
@@ -223,7 +211,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [WIN_FN] = LAYOUT_113_jis(
         _______, KC_BRID,      KC_BRIU,     KC_TASK,  KC_FILE,  RGB_VAD,  RGB_VAI,  KC_MPRV, KC_MPLY,    KC_MNXT,   KC_MUTE,     KC_VOLD,     KC_VOLU,    RGB_TOG,            G(KC_G),    COPILOT,    RGB_RMOD,    RGB_HUD,    RGB_SAD,  RGB_VAD,  RGB_SPD,
         _______, BT_HST1,      BT_HST2,     BT_HST3,  P2P4G,    _______,  _______,  _______, _______,    _______,   _______,     _______,     _______,    _______,   _______, _______,    _______,    _______,     _______,    _______,  _______,  _______,
-        RGB_TOG, G(S(KC_F23)), CUT_TEXT,    KC_END,   C(KC_R),  C(KC_T),  C(KC_V),  C(KC_Z), KC_TAB,     C(KC_O),   KC_UP,       SET_MARK,     KC_ESC,  C(KC_ENT),            _______,    _______,    _______,     _______,    _______,  _______,  _______,
+        RGB_TOG, G(S(KC_F23)), C(KC_X),     KC_END,   C(KC_R),  C(KC_T),  C(KC_V),  C(KC_Z), KC_TAB,     C(KC_O),   KC_UP,       SET_MARK,     KC_ESC,  C(KC_ENT),            _______,    _______,    _______,     _______,    _______,  _______,  _______,
         _______, KC_HOME,      C(KC_F),     KC_DEL,   KC_RGHT,  ABORT,    KC_BSPC,  KC_ENT,  CUT_LINE,   C(KC_L),   C(KC_SCLN),  C(KC_QUOT),  C(KC_BSLS),                                                          _______,    _______,  _______,
      C(KC_LSFT), G(KC_DOWN),   OSL(WIN_CX), C(KC_C),  KC_PGDN,  KC_LEFT,  KC_DOWN,  KC_ENT,  C(KC_COMM), C(KC_DOT), C(KC_Z),     _______,     C(KC_RSFT),                                 KC_MS_UP,                _______,    _______,  _______,  _______,
         _______, C(KC_LGUI),   C(KC_LALT),  _______,                      SET_MARK,                      _______,   C(KC_RCMMD), C(KC_ROPTN), _______,    KC_MS_BTN1,         KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_BTN2,           _______          ),
